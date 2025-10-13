@@ -54,7 +54,7 @@ export default function Collapsible({
     <div className="mb-1">
       <button
         onClick={toggle}
-        className={cn(`w-full cursor-pointer text-left text-[15px]`, {
+        className={cn(`w-full cursor-pointer text-left`, {
           "pb-0 text-[14px]": depth === 2,
         })}
         style={{
