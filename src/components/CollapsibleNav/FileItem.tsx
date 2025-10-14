@@ -9,7 +9,7 @@ export default function FileItem({ depth, item }: FileItemProps) {
   return (
     <button
       className={
-        "w-full cursor-pointer py-0 text-left text-sm text-gray-700 hover:text-black"
+        "w-full cursor-pointer py-0 text-left text-gray-700 hover:text-black"
       }
       style={{
         paddingLeft: (depth - 1) * 12,
