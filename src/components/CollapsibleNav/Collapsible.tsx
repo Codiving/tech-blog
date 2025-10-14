@@ -54,8 +54,8 @@ export default function Collapsible({
     <div className="mb-1">
       <button
         onClick={toggle}
-        className={cn(`w-full cursor-pointer text-left`, {
-          "pb-0 text-[14px]": depth === 2,
+        className={cn(`w-full cursor-pointer py-0.5 text-left`, {
+          // "text-[16px]": depth === 2,
         })}
         style={{
           paddingLeft: (depth - 1) * 12,
