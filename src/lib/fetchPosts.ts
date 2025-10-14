@@ -1,3 +1,7 @@
+import rehypePrettyCode from "rehype-pretty-code";
+import rehypeSlug from "rehype-slug";
+import { compileMDX } from "next-mdx-remote/rsc";
+
 const REPOSITORY_URL = `https://api.github.com/repos/${process.env.USER_NAME}/${process.env.REPOSITORY_NAME}/git/trees/${process.env.BRANCH_NAME}?recursive=1`;
 const POST_RAW_DATA_URL = `https://raw.githubusercontent.com/${process.env.USER_NAME}/${process.env.REPOSITORY_NAME}/${process.env.BRANCH_NAME}`;
 
@@ -5,7 +9,7 @@ interface RepoFileTree {
   tree: { path: string }[];
 }
 
-async function fetchRepoFileTree(): Promise<RepoFileTree | null> {
+export async function fetchRepoFileTree(): Promise<RepoFileTree | null> {
   try {
     const res = await fetch(REPOSITORY_URL, {
       headers: {
@@ -64,4 +68,48 @@ export async function buildFolderStructure() {
   }
 
   return root;
+}
+
+export async function getPostByFileName(fileName: string) {
+  const res = await fetch(`${POST_RAW_DATA_URL}/${fileName}`);
+  const source = await res.text();
+
+  if (!source || source === "404: Not Found") {
+    return null;
+  }
+
+  const { frontmatter, content } = await compileMDX<{
+    title: string;
+    description: string;
+    keywords: string[];
+    thumbnail: string;
+    summary: string;
+    date: string;
+  }>({
+    source,
+
+    options: {
+      parseFrontmatter: true,
+      mdxOptions: {
+        remarkPlugins: [],
+        rehypePlugins: [
+          [
+            // code highlight
+            rehypePrettyCode,
+            {
+              theme: "github-dark",
+              keepBackground: true,
+            },
+          ],
+          // heading 태그 id 부여
+          rehypeSlug,
+        ],
+      },
+    },
+  });
+
+  return {
+    content,
+    frontmatter,
+  };
 }
