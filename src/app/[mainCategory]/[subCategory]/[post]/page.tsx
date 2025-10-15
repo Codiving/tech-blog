@@ -14,5 +14,7 @@ export default async function PostPage({ params }: PostPageProps) {
   if (!result) return null;
 
   const { content } = result;
-  return <article className="p-6">{content}</article>;
+  return (
+    <article className="h-fit flex-1 overflow-x-auto p-6">{content}</article>
+  );
 }
