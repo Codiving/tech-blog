@@ -1,6 +1,9 @@
+import { remark } from "remark";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
 import { compileMDX } from "next-mdx-remote/rsc";
+import strip from "strip-markdown";
+import matter from "gray-matter";
 
 const REPOSITORY_URL = `https://api.github.com/repos/${process.env.USER_NAME}/${process.env.REPOSITORY_NAME}/git/trees/${process.env.BRANCH_NAME}?recursive=1`;
 const POST_RAW_DATA_URL = `https://raw.githubusercontent.com/${process.env.USER_NAME}/${process.env.REPOSITORY_NAME}/${process.env.BRANCH_NAME}`;
@@ -78,38 +81,34 @@ export async function getPostByFileName(fileName: string) {
     return null;
   }
 
-  const { frontmatter, content } = await compileMDX<{
-    title: string;
-    description: string;
-    keywords: string[];
-    thumbnail: string;
-    summary: string;
-    date: string;
-  }>({
-    source,
+  // frontmatter 분리
+  const { content: rawContent, data: frontmatter } = matter(source);
 
+  // MDX 컴파일
+  const { content } = await compileMDX({
+    source,
     options: {
       parseFrontmatter: true,
       mdxOptions: {
         remarkPlugins: [],
         rehypePlugins: [
-          [
-            // code highlight
-            rehypePrettyCode,
-            {
-              theme: "github-dark",
-              keepBackground: true,
-            },
-          ],
-          // heading 태그 id 부여
+          [rehypePrettyCode, { theme: "github-dark", keepBackground: true }],
           rehypeSlug,
         ],
       },
     },
   });
 
+  // JSX/TSX 태그 제거
+  const noJSX = rawContent.replace(/<[^>]+>/g, "");
+
+  // Markdown 문법 제거 후 summary 생성
+  const summaryFromContent = await remark().use(strip).process(noJSX);
+  const summaryText = summaryFromContent.toString();
+
   return {
     content,
     frontmatter,
+    summaryText, // summaryText를 frontmatter 대신 전달
   };
 }
