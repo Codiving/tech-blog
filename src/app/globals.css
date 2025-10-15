@@ -66,6 +66,7 @@
 
 body {
   font-family: Pretendard;
+  color: #333333;
 }
 
 header {
@@ -145,4 +146,17 @@ header {
 
 #sidebar {
   font-family: Pretendard;
+}
+
+figure {
+  overflow-x: scroll;
+}
+
+figure figcaption {
+  position: sticky;
+  left: 0px;
+}
+figure pre,
+figure code {
+  min-width: fit-content;
 }

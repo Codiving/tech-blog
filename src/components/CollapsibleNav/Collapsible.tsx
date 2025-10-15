@@ -69,7 +69,7 @@ export default function Collapsible({
         className="overflow-hidden transition-all duration-300 ease-in-out"
         style={{ height: initialOpen ? "auto" : "0px" }}
       >
-        <div className={`bg-gray-100`}>{children}</div>
+        <div>{children}</div>
       </div>
     </div>
   );
