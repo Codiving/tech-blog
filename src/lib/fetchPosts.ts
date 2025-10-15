@@ -1,9 +1,10 @@
-import { remark } from "remark";
+import matter from "gray-matter";
+import { compileMDX } from "next-mdx-remote/rsc";
+import Image from "next/image";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
-import { compileMDX } from "next-mdx-remote/rsc";
+import { remark } from "remark";
 import strip from "strip-markdown";
-import matter from "gray-matter";
 
 const REPOSITORY_URL = `https://api.github.com/repos/${process.env.USER_NAME}/${process.env.REPOSITORY_NAME}/git/trees/${process.env.BRANCH_NAME}?recursive=1`;
 const POST_RAW_DATA_URL = `https://raw.githubusercontent.com/${process.env.USER_NAME}/${process.env.REPOSITORY_NAME}/${process.env.BRANCH_NAME}`;
@@ -87,6 +88,9 @@ export async function getPostByFileName(fileName: string) {
   // MDX 컴파일
   const { content } = await compileMDX({
     source,
+    components: {
+      Image,
+    },
     options: {
       parseFrontmatter: true,
       mdxOptions: {
